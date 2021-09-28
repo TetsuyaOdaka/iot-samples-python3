@@ -27,15 +27,20 @@ QOS = 1
 # ブローカーに接続できたときの処理
 def on_connect(client, userdata, flag, rc):
     print("Connected with result code " + str(rc))
+    return
 
 # ブローカーが切断したときの処理
 def on_disconnect(client, userdata, rc):
     if rc != 0:
         print("Unexpected disconnection.")
+    else:
+        print("disconnected.")
+    return
 
 # publishが完了したときの処理
 def on_publish(client, userdata, mid):
     print("publish: {0}".format(mid))
+    return
 
 # メイン関数   この関数は末尾のif文から呼び出される
 def main():
@@ -57,7 +62,11 @@ def main():
     _d = myBME280.readData()
     _d["sensor"] = "BME280"
     # json.dumpsで正しいjsonにしてから投げるのがよい。
-    client.publish(TOPIC, json.dumps(_d), QOS)    # トピック名とメッセージを決めて送信
+    _jd = json.dumps(_d)
+    print(_jd)
+    client.publish(TOPIC, _jd, QOS)    # トピック名とメッセージを決めて送信
+    client.disconnect()
+    return
 
 if __name__ == '__main__':          # importされないときだけmain()を呼ぶ
     parser = argparse.ArgumentParser()
