@@ -4,10 +4,6 @@
 
 '''
 import sys, os, re
-import time
-from datetime import datetime
-from logging import getLogger, Formatter, FileHandler, StreamHandler, DEBUG, INFO
-import traceback
 import json
 
 import argparse
