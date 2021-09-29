@@ -27,7 +27,7 @@ GPIO.setmode(GPIO.BCM)
 
 # LEDピンを出力に設定
 GPIO.setup(GPIO_LED, GPIO.OUT)
-
+GPIO.output(GPIO_LED, 0)    # LED消灯
 
 # ブローカーに接続できたときの処理
 def on_connect(client, userdata, flag, rc):
@@ -50,17 +50,24 @@ def on_disconnect(client, userdata, rc):
 # メッセージが届いたときの処理
 def on_message(client, userdata, msg):
     # msg.topicにトピック名が，msg.payloadに届いたデータ本体が入っている
-    _tmp = json.loads(msg.payload)
-    _val = _tmp["value"]
-    if _val < -3.0 or _val > 3.0:
-        for i in range(2):
-            GPIO.output(GPIO_LED, 1)    # LED点灯
-            time.sleep(1)   
+    try:
+        _tmp = json.loads(msg.payload)
+        _val = _tmp["value"]
+        print("value : {}".format(_val))
+        if _val < -3.0 or _val > 3.0:
+            for i in range(2):
+                GPIO.output(GPIO_LED, 1)    # LED点灯
+                time.sleep(1)
+                GPIO.output(GPIO_LED, 0)    # LED消灯
+                time.sleep(1)
+        else:
             GPIO.output(GPIO_LED, 0)    # LED消灯
-            time.sleep(1)
 
-    print("Received message '" + str(_tmp) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
+        print("Received message '" + str(_tmp) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
+    except:
+        print("Json Error")
 
+    return
 
 # メイン関数   この関数は末尾のif文から呼び出される
 def main():
