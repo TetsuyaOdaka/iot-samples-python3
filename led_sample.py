@@ -5,8 +5,6 @@ Lチカ
 import RPi.GPIO as GPIO # RPi.GPIOモジュールを使用
 import time
 
-# LEDとスイッチのGPIO番号
-# デフォルトはRPZ-IR-Sensorの緑LEDと赤SW
 # 必要に応じて変更
 gpio_led = 17
 
