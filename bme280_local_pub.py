@@ -13,7 +13,8 @@ from time import sleep              # 3秒間のウェイトのために使う
 
 import bme280_sample as BME280  # スイッチサイエンスのサンプルを修正したもの
 
-CLIENT_ID = os.uname()[1] # クライアントID=ホスト名（ユニークでなければならないので注意）
+SCRIPT_NAME = os.path.basename(__file__)
+CLIENT_ID = os.uname()[1] + "_" + SCRIPT_NAME # クライアントID（ユニークでなければならないので注意）
 MQTT_HOST = ""
 MQTT_PORT = 1883
 KEEP_ALIVE = 60
@@ -22,12 +23,12 @@ QOS = 1
 SLEEP = 3 # sec
 
 # ブローカーに接続できたときの処理
-def on_connect(client, userdata, flag, rc):
+def on_connect(rc):
     print("Connected with result code " + str(rc))
     return
 
 # ブローカーが切断したときの処理
-def on_disconnect(client, userdata, rc):
+def on_disconnect(rc):
     if rc != 0:
         print("Unexpected disconnection.")
     else:
@@ -35,7 +36,7 @@ def on_disconnect(client, userdata, rc):
     return
 
 # publishが完了したときの処理
-def on_publish(client, userdata, mid):
+def on_publish(mid):
     print("publish: {0}".format(mid))
     return
 
