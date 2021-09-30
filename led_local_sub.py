@@ -31,17 +31,17 @@ GPIO.setup(GPIO_LED, GPIO.OUT)
 GPIO.output(GPIO_LED, 0)    # LED消灯
 
 # ブローカーに接続できたときの処理
-def on_connect(rc):
+def on_connect(client, userdata, flag, rc):
     print("Connected with result code " + str(rc))  # 接続できた旨表示
     return
 
 # サブスクライブしたときの処理
-def on_subscribe(mid, qos):
+def on_subscribe(client, userdata, mid, qos):
     print("Subscribe: {}, QOS: {} ".format(str(mid), str(qos)))  # 接続できた旨表示
     return
 
 # ブローカーが切断したときの処理
-def on_disconnect(rc):
+def on_disconnect(client, userdata, rc):
     if  rc != 0:
         print("Unexpected disconnection. rc = {}".format(rc))
     else:
@@ -49,7 +49,7 @@ def on_disconnect(rc):
     return
 
 # メッセージが届いたときの処理
-def on_message(msg):
+def on_message(client, userdata, msg):
     # msg.topicにトピック名が，msg.payloadに届いたデータ本体が入っている
     try:
         _tmp = json.loads(msg.payload)

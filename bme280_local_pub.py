@@ -23,12 +23,12 @@ QOS = 1
 SLEEP = 3 # sec
 
 # ブローカーに接続できたときの処理
-def on_connect(rc):
+def on_connect(client, userdata, flag, rc):
     print("Connected with result code " + str(rc))
     return
 
 # ブローカーが切断したときの処理
-def on_disconnect(rc):
+def on_disconnect(client, userdata, rc):
     if rc != 0:
         print("Unexpected disconnection.")
     else:
@@ -36,7 +36,7 @@ def on_disconnect(rc):
     return
 
 # publishが完了したときの処理
-def on_publish(mid):
+def on_publish(client, userdata, mid):
     print("publish: {0}".format(mid))
     return
 
