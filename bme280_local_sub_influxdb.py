@@ -56,7 +56,7 @@ def on_message(client, userdata, msg):
         # msg.topicにトピック名が，msg.payloadに届いたデータ本体が入っている
         _tmp = json.loads(msg.payload)
         _wk = msg.topic.split('/')
-        async_write_bme280(_tmp, _wk[2])
+        async_write_bme280(_tmp, _wk[1])
     except:
         print("Json Error")
     return
@@ -78,7 +78,7 @@ def async_write_bme280(jdata, hostname):
 
     async_result = write_api.write(bucket=INFLUX_BUCKET, record=_points)
     async_result.get()
-    LOGGER.debug("Write InfluxDB")
+    print("Write InfluxDB")
 
     return
 
@@ -102,7 +102,7 @@ if __name__ == '__main__':          # importされないときだけmain()を呼
     parser.add_argument("--keepalive", type=int, default=60, help="")
     parser.add_argument("--topic", type=str, default="l2l/test", help="Targeted topic")
     parser.add_argument("--qos", type=int, default=1, help="qos=0 or 1 or 2")
-    parser.add_argument("--infhost", type=str, default="localhost", help="hostname or ip")
+    parser.add_argument("--infhost", type=str, default="", help="hostname or ip")
     parser.add_argument("--inftoken", type=str, default="", help="token to write db")
     parser.add_argument("--infbucket", type=str, default="", help="bucketname")
     
@@ -112,6 +112,8 @@ if __name__ == '__main__':          # importされないときだけmain()を呼
     KEEP_ALIVE = args.keepalive
     TOPIC = args.topic
     QOS = args.qos
+    if len(args.infhost) == 0:
+        args.infhost = args.hostname
     INFLUX_HOST = INFLUX_HOST.format(args.infhost)
     INFLUX_TOKEN = args.inftoken
     INFLUX_BUCKET = args.infbucket
