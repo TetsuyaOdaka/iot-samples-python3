@@ -28,7 +28,7 @@ INFLUX_TOKEN = ""
 INFLUX_ORG = "pydev"
 INFLUX_BUCKET = ""
 MEASUREMENT = "bme280"
-FLUX_CLIENT = None
+INFLUX_CLIENT = None
 
 
 # ブローカーに接続できたときの処理
@@ -66,7 +66,7 @@ def on_message(client, userdata, msg):
 '''
 def async_write_bme280(jdata, hostname):
 
-    write_api = FLUX_CLIENT.write_api(write_options=ASYNCHRONOUS)
+    write_api = INFLUX_CLIENT.write_api(write_options=ASYNCHRONOUS)
 
     _points = []
     _point = Point(MEASUREMENT).tag("hostname", hostname).field("temperature", jdata["temperature"])
@@ -117,6 +117,6 @@ if __name__ == '__main__':          # importされないときだけmain()を呼
     INFLUX_HOST = INFLUX_HOST.format(args.infhost)
     INFLUX_TOKEN = args.inftoken
     INFLUX_BUCKET = args.infbucket
-    FLUX_CLIENT = InfluxDBClient(url=INFLUX_HOST, token=INFLUX_TOKEN, org=INFLUX_ORG)
+    INFLUX_CLIENT = InfluxDBClient(url=INFLUX_HOST, token=INFLUX_TOKEN, org=INFLUX_ORG)
     
     main()    # メイン関数を呼び出す
