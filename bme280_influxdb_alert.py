@@ -25,13 +25,13 @@ MEASUREMENT = "bme280"
 FLUX_CLIENT = None
 SENSOR_CLIENT = "rp006"
 
-INFLUX_QUERY = "from(bucket: {0}) \
+INFLUX_QUERY = 'from(bucket: {0}) \
     |> range(start: v.timeRangeStart, stop: v.timeRangeStop) \
-    |> filter(fn: (r) => r['_measurement'] == {1}) \
-    |> filter(fn: (r) => r['_field'] == 'temperature') \
-    |> filter(fn: (r) => r['hostname'] == {2}) \
+    |> filter(fn: (r) => r["_measurement"] == {1}) \
+    |> filter(fn: (r) => r["_field"] == "temperature") \
+    |> filter(fn: (r) => r["hostname"] == {2}) \
     |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false) \
-    |> yield(name: 'mean')"
+    |> yield(name: "mean")'
 
 
 # メイン関数   この関数は末尾のif文から呼び出される
