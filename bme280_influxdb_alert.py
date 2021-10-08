@@ -35,7 +35,7 @@ INFLUX_QUERY = 'from(bucket: "{0}") \
 def main():
     tables = FLUX_CLIENT.query_api().query(INFLUX_QUERY)
     for table in tables:
-        print(table)
+        print(len(table.records))
         for row in table.records:
             print (row.values)
     
@@ -55,7 +55,7 @@ if __name__ == '__main__':          # importされないときだけmain()を呼
     INFLUX_BUCKET = args.infbucket
     SENSOR_CLIENT = args.sensorclient
     INFLUX_QUERY = INFLUX_QUERY.format(INFLUX_BUCKET, MEASUREMENT, SENSOR_CLIENT)
-    print(INFLUX_QUERY)
+#    print(INFLUX_QUERY)
     FLUX_CLIENT = InfluxDBClient(url=INFLUX_HOST, token=INFLUX_TOKEN, org=INFLUX_ORG)
     
     while True:
