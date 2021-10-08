@@ -1,11 +1,12 @@
 '''
-influxdbからデータを取得する
+influxdbからデータを取得して異常値だったらslackに通知する
 
 
 '''
 import sys, os, re
 import time
 import json
+import urllib.request
 
 import argparse
 
@@ -19,7 +20,7 @@ INFLUX_TOKEN = ""
 INFLUX_ORG = "pydev"
 INFLUX_BUCKET = ""
 MEASUREMENT = "bme280"
-FLUX_CLIENT = None
+INFLUX_CLIENT = None
 SENSOR_CLIENT = "rp006"
 
 INFLUX_QUERY = 'from(bucket: "{0}") \
@@ -30,19 +31,60 @@ INFLUX_QUERY = 'from(bucket: "{0}") \
     |> aggregateWindow(every: 10s, fn: mean, createEmpty: false) \
     |> yield(name: "mean")'
 
+WEB_HOOK = ""
+
+
+'''
+Slackへpostする関数
+
+'''
+def post_slack(title, msg, color):
+    post_fields = [{
+        "title": title,
+        "value": msg,
+        "short": False
+    }]
+
+    post_data = {
+        'attachments':  [{
+            'color': color,
+            'fields': post_fields
+        }]
+    }
+
+    method = 'POST'
+    request_headers = { 'Content-Type': 'application/json; charset=utf-8' }
+    body = json.dumps(post_data).encode("utf-8")
+    request = urllib.request.Request(
+        url=WEB_HOOK, 
+        data=body, 
+        method=method,
+        headers=request_headers 
+    )
+    urllib.request.urlopen(request)
+    return
+
 
 # メイン関数   この関数は末尾のif文から呼び出される
 def main():
-    tables = FLUX_CLIENT.query_api().query(INFLUX_QUERY)
-    for table in tables:
-        print(len(table.records))
-        for row in table.records:
-            print (row.values)
+    # データの取得
+    # ref https://github.com/influxdata/influxdb-client-python
+    tables = INFLUX_CLIENT.query_api().query(INFLUX_QUERY)
+    _last_value = tables[0].records[-1].values["_value"]
 
+    print(_last_value)
 
-    print(table.records[-1].values["_value"])
-#    _j = json.loads(table.records[-1].values)
-#    print(_j["_value"])
+    if _last_value > 40.0:
+        title = '障害通知'
+        msg = '{} の温度が{:.2f}です。'.format(SENSOR_CLIENT, _last_value)
+        color = 'danger'
+        post_slack(title, msg, color)
+    elif _last_value > 35.0:
+        title = '警告'
+        msg = '{} の温度が{:.2f}です。'.format(SENSOR_CLIENT, _last_value)
+        color = 'warning'
+        post_slack(title, msg, color)
+
     time.sleep(10)
 
 
@@ -52,6 +94,7 @@ if __name__ == '__main__':          # importされないときだけmain()を呼
     parser.add_argument("--inftoken", type=str, default="", help="token to write db")
     parser.add_argument("--infbucket", type=str, default="", help="bucketname")
     parser.add_argument("--sensorclient", type=str, default="", help="hostname of raspberrypi")
+    parser.add_argument("--webhookuri", type=str, default="", help="webhook")
     
     args = parser.parse_args()
     INFLUX_HOST = INFLUX_HOST.format(args.infhost)
@@ -59,8 +102,8 @@ if __name__ == '__main__':          # importされないときだけmain()を呼
     INFLUX_BUCKET = args.infbucket
     SENSOR_CLIENT = args.sensorclient
     INFLUX_QUERY = INFLUX_QUERY.format(INFLUX_BUCKET, MEASUREMENT, SENSOR_CLIENT)
-#    print(INFLUX_QUERY)
-    FLUX_CLIENT = InfluxDBClient(url=INFLUX_HOST, token=INFLUX_TOKEN, org=INFLUX_ORG)
+    INFLUX_CLIENT = InfluxDBClient(url=INFLUX_HOST, token=INFLUX_TOKEN, org=INFLUX_ORG)
+    WEB_HOOK = args.webhookuri
     
     while True:
         main()    # メイン関数を呼び出す
