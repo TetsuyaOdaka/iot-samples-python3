@@ -40,9 +40,9 @@ def main():
             print (row.values)
 
 
-    print(table.records[-1].values)
-    _j = json.loads(table.records[-1].values)
-    print(_j["_value"])
+    print(table.records[-1].values["_value"])
+#    _j = json.loads(table.records[-1].values)
+#    print(_j["_value"])
     time.sleep(10)
 
 
