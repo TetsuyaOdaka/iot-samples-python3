@@ -38,7 +38,9 @@ def main():
         print(len(table.records))
         for row in table.records:
             print (row.values)
-    
+
+
+    print(table.records[-1])
     time.sleep(10)
 
 
