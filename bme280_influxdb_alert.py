@@ -40,7 +40,7 @@ def main():
             print (row.values)
 
 
-    print(table.records[-1])
+    print(table.records[-1].values)
     time.sleep(10)
 
 
