@@ -26,11 +26,11 @@ FLUX_CLIENT = None
 SENSOR_CLIENT = "rp006"
 
 INFLUX_QUERY = 'from(bucket: {0}) \
-    |> range(start: v.timeRangeStart, stop: v.timeRangeStop) \
+    |> range(start: -1m) \
     |> filter(fn: (r) => r["_measurement"] == {1}) \
     |> filter(fn: (r) => r["_field"] == "temperature") \
     |> filter(fn: (r) => r["hostname"] == {2}) \
-    |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false) \
+    |> aggregateWindow(every: 10s, fn: mean, createEmpty: false) \
     |> yield(name: "mean")'
 
 
