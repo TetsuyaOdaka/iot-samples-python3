@@ -41,6 +41,8 @@ def main():
 
 
     print(table.records[-1].values)
+    _j = json.loads(table.records[-1].values)
+    print(_j["_value"])
     time.sleep(10)
 
 
