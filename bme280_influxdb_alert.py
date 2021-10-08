@@ -9,9 +9,6 @@ import json
 
 import argparse
 
-import paho.mqtt.client as mqtt     # MQTTのライブラリをインポート
-from time import sleep              # 3秒間のウェイトのために使う
-
 from influxdb_client import InfluxDBClient, Point, WriteOptions
 from influxdb_client.client.write_api import ASYNCHRONOUS
 
@@ -25,11 +22,11 @@ MEASUREMENT = "bme280"
 FLUX_CLIENT = None
 SENSOR_CLIENT = "rp006"
 
-INFLUX_QUERY = 'from(bucket: {0}) \
+INFLUX_QUERY = 'from(bucket: "{0}") \
     |> range(start: -1m) \
-    |> filter(fn: (r) => r["_measurement"] == {1}) \
+    |> filter(fn: (r) => r["_measurement"] == "{1}") \
     |> filter(fn: (r) => r["_field"] == "temperature") \
-    |> filter(fn: (r) => r["hostname"] == {2}) \
+    |> filter(fn: (r) => r["hostname"] == "{2}") \
     |> aggregateWindow(every: 10s, fn: mean, createEmpty: false) \
     |> yield(name: "mean")'
 
