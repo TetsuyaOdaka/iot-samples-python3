@@ -8,6 +8,7 @@ import time
 # 必要に応じて変更
 gpio_led = 17
 
+GPIO.setwarnings(False)
 # GPIO番号指定の準備
 GPIO.setmode(GPIO.BCM)
 
